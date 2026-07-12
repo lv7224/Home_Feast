@@ -111,8 +111,8 @@ export default function VendorSignup() {
         monthlyPrice: "",
       });
 
-      // Redirect to the cook page after a brief delay
-      setTimeout(() => navigate(`/cook/${data.vendor._id}`), 1500);
+      // Redirect to the vendor login page after a brief delay
+      setTimeout(() => navigate("/vendorLogin"), 1500);
     } catch (err) {
       setError(err.message || "Failed to connect to server.");
     }

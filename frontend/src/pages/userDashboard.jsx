@@ -6,6 +6,8 @@ export default function UserDashboard() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
+  const [reviewDrafts, setReviewDrafts] = useState({});
+  const [reviewStatus, setReviewStatus] = useState({});
 
   useEffect(() => {
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
@@ -31,6 +33,37 @@ export default function UserDashboard() {
 
     fetchOrders();
   }, [navigate]);
+
+  const handleReviewChange = (orderId, value) => {
+    setReviewDrafts((prev) => ({ ...prev, [orderId]: value }));
+  };
+
+  const handleSendReview = async (orderId) => {
+    const reviewText = (reviewDrafts[orderId] || "").trim();
+    if (!reviewText) {
+      setReviewStatus((prev) => ({ ...prev, [orderId]: 'Please enter a review before sending.' }));
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/orders/${orderId}/status`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ vendorReview: reviewText }),
+      });
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Failed to send review.');
+      }
+
+      const updated = await res.json();
+      setOrders((prevOrders) => prevOrders.map((order) => (order._id === orderId ? updated.order : order)));
+      setReviewStatus((prev) => ({ ...prev, [orderId]: 'Review submitted successfully.' }));
+      setReviewDrafts((prev) => ({ ...prev, [orderId]: '' }));
+    } catch (err) {
+      setReviewStatus((prev) => ({ ...prev, [orderId]: err.message }));
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 p-6 lg:p-10">
@@ -71,6 +104,30 @@ export default function UserDashboard() {
                       </div>
                     ))}
                   </div>
+
+                  {order.deliveryStatus === 'Delivered' && !order.vendorReview && (
+                    <div className="mt-4 border-t pt-4 space-y-3">
+                      <p className="text-sm font-semibold text-gray-700">Share a review for this kitchen</p>
+                      <textarea
+                        className="w-full rounded-lg border border-gray-200 p-3 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500"
+                        rows={3}
+                        value={reviewDrafts[order._id] || ''}
+                        onChange={(e) => handleReviewChange(order._id, e.target.value)}
+                        placeholder="Write a quick review for the kitchen..."
+                      />
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                        <button
+                          onClick={() => handleSendReview(order._id)}
+                          className="inline-flex items-center justify-center rounded-lg bg-green-600 px-4 py-2 text-sm font-semibold text-white hover:bg-green-700 transition"
+                        >
+                          Send Review
+                        </button>
+                        {reviewStatus[order._id] && (
+                          <p className="text-sm text-gray-600">{reviewStatus[order._id]}</p>
+                        )}
+                      </div>
+                    </div>
+                  )}
 
                   {order.vendorReview && (
                     <div className="mt-4 border-t pt-3">

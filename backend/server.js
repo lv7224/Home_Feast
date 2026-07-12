@@ -162,10 +162,17 @@ app.post("/api/vendor/login", async (req, res) => {
   }
 });
 
-// 5. Fetch Verified Cooks API
+// 5. Fetch Cooks API
+//    - Admin and dashboard consumers get the full list.
+//    - Homepage can request only approved kitchens with ?approved=true.
 app.get("/api/cooks", async (req, res) => {
   try {
-    const cooks = await Cook.find({});
+    const filter = {};
+    if (req.query.approved === "true") {
+      filter.status = "Approved";
+    }
+
+    const cooks = await Cook.find(filter);
     res.status(200).json(cooks);
   } catch (error) {
     console.error(error);

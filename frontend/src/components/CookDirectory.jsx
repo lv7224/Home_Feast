@@ -27,7 +27,7 @@ export default function CookDirectory() {
     setLoading(true);
     setError(null);
 
-    fetch("/api/cooks")
+    fetch("/api/cooks?approved=true")
       .then((res) => {
         // Fix: Explicitly intercept bad gateway/server crashes before parsing JSON
         if (!res.ok) {
