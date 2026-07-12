@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="46" fill="none" viewBox="0 0 48 46">
+  <!-- Background -->
+  <rect width="48" height="46" fill="#FFF8F0" rx="8" />
+
+  <!-- Icon Group centered in the 48x46 viewport -->
+  <g transform="translate(24, 20)">
+    <!-- House Roof / Chef Hat shape -->
+    <path d="M 0 -14 L -16 -2 L 16 -2 Z" fill="#FF8C00" />
+
+    <!-- House Body -->
+    <rect x="-12" y="-2" width="24" height="14" fill="#800020" rx="1" />
+
+    <!-- Plate / Archway -->
+    <path d="M 0 4 C -7 4 -9 9 -9 12 L 9 12 C 9 9 7 4 0 4 Z" fill="#FFF8F0" />
+
+    <!-- Steam Lines -->
+    <path
+      d="M -3 1 C -3 -1 -1 -1 -1 1 C -1 3 1 3 1 1"
+      fill="none"
+      stroke="#FFF8F0"
+      stroke-width="0.8"
+      stroke-linecap="round"
+    />
+    <path
+      d="M 2 -0.5 C 2 -2.5 4 -2.5 4 -0.5 C 4 1.5 6 1.5 6 -0.5"
+      fill="none"
+      stroke="#FFF8F0"
+      stroke-width="0.8"
+      stroke-linecap="round"
+    />
+  </g>
+</svg>

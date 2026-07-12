@@ -1,0 +1,39 @@
+{
+  "name": "homefeast",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "cd frontend && vite --config vite.config.js",
+    "build": "cd frontend && vite build --config vite.config.js",
+    "lint": "oxlint frontend/src",
+    "preview": "cd frontend && vite preview --config vite.config.js",
+    "start": "nodemon backend/server.js"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.3.2",
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "lucide-react": "^1.23.0",
+    "mongoose": "^9.7.3",
+    "nodemon": "^3.1.14",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "react-router-dom": "^7.18.1",
+    "tailwindcss": "^4.3.2"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.3",
+    "oxlint": "^1.71.0",
+    "vite": "^8.1.1"
+  },
+  "description": "This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.",
+  "main": "backend/server.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
