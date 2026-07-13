@@ -89,7 +89,7 @@ const Footer = () => {
             </p>
           </div>
           <form onSubmit={handleSubmit} className="rounded-3xl border border-gray-800 bg-gray-900 p-6 shadow-xl shadow-black/20">
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid gap-4 sm:grid-cols-2 justify-evenly">
               <label className="block text-sm text-gray-300">
                 I am a
                 <select
@@ -112,8 +112,8 @@ const Footer = () => {
                   className="mt-2 w-full rounded-2xl border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-white outline-none"
                 />
               </label>
-              <label className="block text-sm text-gray-300">
-                Email
+              <label className="block text-sm text-gray-300 ">
+                Email 
                 <input
                   name="email"
                   type="email"
@@ -124,12 +124,12 @@ const Footer = () => {
                 />
               </label>
               <label className="block text-sm text-gray-300">
-                Related Kitchen / Vendor
+               Complaint To 
                 <input
                   name="vendorName"
                   value={formData.vendorName}
                   onChange={handleChange}
-                  placeholder="Kitchen name or vendor"
+                  placeholder="Kitchen/vendor/User"
                   className="mt-2 w-full rounded-2xl border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-white outline-none"
                 />
               </label>
