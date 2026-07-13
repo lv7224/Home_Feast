@@ -758,6 +758,47 @@ app.post("/api/menu", async (req, res) => {
  }
 });
 
+app.patch("/api/menu/:id", async (req, res) => {
+ try {
+  const {
+   name,
+   price,
+   category,
+   description,
+   mealType,
+   image,
+   availability,
+  } = req.body;
+
+  const update = {};
+  if (name !== undefined) update.title = name;
+  if (price !== undefined) update.price = Number(price);
+  if (category !== undefined) update.category = category;
+  if (description !== undefined) update.description = description;
+  if (mealType !== undefined) update.mealType = mealType;
+  if (image !== undefined) update.image = image;
+  if (availability !== undefined) update.availability = availability;
+
+  const updatedMenuItem = await Menu.findByIdAndUpdate(
+   req.params.id,
+   update,
+   {
+    returnDocument: 'after',
+    runValidators: true,
+   },
+  );
+
+  if (!updatedMenuItem) {
+   return res.status(404).json({ message: "Menu item not found" });
+  }
+
+  res.status(200).json(normalizeMenuItem(updatedMenuItem));
+ } catch (error) {
+  console.error(error);
+  res.status(500).json({ message: "Server error updating menu item" });
+ }
+});
+
 app.delete("/api/menu/:id", async (req, res) => {
  try {
   const menuItem = await Menu.findByIdAndDelete(

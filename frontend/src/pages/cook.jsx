@@ -22,6 +22,8 @@ export default function Cook() {
 
   // State for New Dish Form
   const [newDish, setNewDish] = useState({ name: '', price: '', category: '', description: '', image: '', mealType: 'Veg' });
+  const [editingDishId, setEditingDishId] = useState(null);
+  const [editingDish, setEditingDish] = useState({ name: '', price: '', category: '', description: '', image: '', mealType: 'Veg' });
 
   // 1. FETCH DATA FROM MONGODB (ON LOAD)
   useEffect(() => {
@@ -122,6 +124,52 @@ export default function Cook() {
       setNewDish({ name: '', price: '', category: '', description: '', image: '', mealType: profile.preference === 'Both' ? 'Veg' : profile.preference === 'Non-Veg' ? 'Non-Veg' : 'Veg' }); // Reset form
     } catch (err) {
       alert("Error adding dish: " + err.message);
+    }
+  };
+
+  const handleEditDish = (item) => {
+    setEditingDishId(item._id);
+    setEditingDish({
+      name: item.name || '',
+      price: item.price?.toString() || '',
+      category: item.category || '',
+      description: item.description || '',
+      image: item.image || '',
+      mealType: item.mealType || (profile.preference === 'Non-Veg' ? 'Non-Veg' : profile.preference === 'Both' ? 'Veg' : 'Veg'),
+    });
+  };
+
+  const handleCancelEdit = () => {
+    setEditingDishId(null);
+    setEditingDish({ name: '', price: '', category: '', description: '', image: '', mealType: profile.preference === 'Both' ? 'Veg' : profile.preference === 'Non-Veg' ? 'Non-Veg' : 'Veg' });
+  };
+
+  const handleSaveDish = async (e, dishId) => {
+    e.preventDefault();
+    if (!editingDish.name || !editingDish.price) return;
+
+    const resolvedMealType = profile.preference === 'Non-Veg' ? 'Non-Veg' : profile.preference === 'Both' ? editingDish.mealType : 'Veg';
+
+    try {
+      const response = await fetch(`/api/menu/${dishId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: editingDish.name,
+          price: parseFloat(editingDish.price),
+          category: editingDish.category,
+          description: editingDish.description,
+          image: editingDish.image,
+          mealType: resolvedMealType,
+        }),
+      });
+
+      if (!response.ok) throw new Error('Failed to update dish');
+      const updatedDish = await response.json();
+      setMenuItems(menuItems.map((item) => (item._id === dishId ? updatedDish : item)));
+      handleCancelEdit();
+    } catch (err) {
+      alert('Error updating dish: ' + err.message);
     }
   };
 
@@ -443,25 +491,123 @@ export default function Cook() {
                   <p className="text-center py-8 text-gray-500 text-sm">No dishes added yet.</p>
                 ) : (
                   menuItems.map((item) => (
-                    <div key={item._id} className="p-6 flex justify-between items-center hover:bg-gray-50 transition-colors gap-4">
-                      <div className="flex items-start gap-4 flex-1">
-                        {item.image ? (
-                          <img src={item.image} alt={item.name} className="w-20 h-20 object-cover rounded-lg border" />
-                        ) : (
-                          <div className="w-20 h-20 rounded-lg border border-dashed border-gray-300 flex items-center justify-center text-xs text-gray-400">No image</div>
-                        )}
-                        <div>
-                          <h4 className="font-bold text-gray-900">{item.name}</h4>
-                          <p className="text-sm text-gray-600 mt-1">₹{item.price} • <span className="italic">{item.category || 'Uncategorized'}</span></p>
-                          <p className="text-xs text-gray-500 mt-1 max-w-lg">{item.description}</p>
+                    <div key={item._id} className="p-6 hover:bg-gray-50 transition-colors gap-4 border-b border-gray-100 last:border-0">
+                      {editingDishId === item._id ? (
+                        <form onSubmit={(e) => handleSaveDish(e, item._id)} className="grid grid-cols-1 gap-4">
+                          <div className="grid gap-4 md:grid-cols-2">
+                            <div>
+                              <label className="block text-xs font-medium text-gray-700 mb-1">Dish Name</label>
+                              <input
+                                type="text"
+                                value={editingDish.name}
+                                onChange={(e) => setEditingDish({ ...editingDish, name: e.target.value })}
+                                className="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none"
+                                required
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-medium text-gray-700 mb-1">Price (₹)</label>
+                              <input
+                                type="number"
+                                value={editingDish.price}
+                                onChange={(e) => setEditingDish({ ...editingDish, price: e.target.value })}
+                                className="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none"
+                                required
+                              />
+                            </div>
+                          </div>
+
+                          <div className="grid gap-4 md:grid-cols-2">
+                            <div>
+                              <label className="block text-xs font-medium text-gray-700 mb-1">Category</label>
+                              <input
+                                type="text"
+                                value={editingDish.category}
+                                onChange={(e) => setEditingDish({ ...editingDish, category: e.target.value })}
+                                className="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none"
+                                placeholder="e.g. Mains"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-medium text-gray-700 mb-1">Image URL</label>
+                              <input
+                                type="url"
+                                value={editingDish.image}
+                                onChange={(e) => setEditingDish({ ...editingDish, image: e.target.value })}
+                                className="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none"
+                                placeholder="https://example.com/dish.jpg"
+                              />
+                            </div>
+                          </div>
+
+                          {profile.preference === 'Both' && (
+                            <div>
+                              <label className="block text-xs font-medium text-gray-700 mb-1">Meal Type</label>
+                              <select
+                                value={editingDish.mealType}
+                                onChange={(e) => setEditingDish({ ...editingDish, mealType: e.target.value })}
+                                className="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none"
+                              >
+                                <option value="Veg">Veg</option>
+                                <option value="Non-Veg">Non-Veg</option>
+                              </select>
+                            </div>
+                          )}
+
+                          <div>
+                            <label className="block text-xs font-medium text-gray-700 mb-1">Description</label>
+                            <textarea
+                              value={editingDish.description}
+                              onChange={(e) => setEditingDish({ ...editingDish, description: e.target.value })}
+                              className="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none resize-none"
+                              rows={3}
+                              placeholder="Brief details about the dish..."
+                            />
+                          </div>
+
+                          <div className="flex flex-wrap gap-3">
+                            <button type="submit" className="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-green-700 transition-colors">
+                              Save Changes
+                            </button>
+                            <button type="button" onClick={handleCancelEdit} className="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-200 transition-colors">
+                              Cancel
+                            </button>
+                          </div>
+                        </form>
+                      ) : (
+                        <div className="flex justify-between items-start gap-4">
+                          <div className="flex items-start gap-4 flex-1">
+                            <div className="min-w-[88px]">
+                              <div className="text-[10px] text-gray-400 uppercase tracking-[0.15em] mb-2">Dish image</div>
+                              {item.image ? (
+                                <img src={item.image} alt={item.name} className="w-20 h-20 object-cover rounded-lg border" />
+                              ) : (
+                                <div className="w-20 h-20 rounded-lg border border-dashed border-gray-300 flex items-center justify-center text-[10px] text-gray-400">No image</div>
+                              )}
+                            </div>
+                            <div>
+                              <h4 className="font-bold text-gray-900">{item.name}</h4>
+                              <p className="text-sm text-gray-600 mt-1">₹{item.price} • <span className="italic">{item.category || 'Uncategorized'}</span></p>
+                              <p className="text-xs text-gray-500 mt-1 max-w-lg">{item.description}</p>
+                              <p className="text-xs mt-2 text-gray-500">Meal type: <span className="font-semibold text-gray-800">{item.mealType || 'Veg'}</span></p>
+                            </div>
+                          </div>
+                          <div className="flex flex-col gap-2">
+                            <button
+                              onClick={() => handleEditDish(item)}
+                              className="text-blue-600 hover:text-blue-800 hover:bg-blue-50 px-3 py-1.5 rounded-md text-sm font-semibold transition-colors"
+                            >
+                              Edit
+                            </button>
+                            <button 
+                              onClick={() => handleDeleteDish(item._id)}
+                              className="text-red-500 hover:text-red-700 hover:bg-red-50 px-3 py-1.5 rounded-md text-sm font-semibold transition-colors"
+                            >
+                              Delete
+                            </button>
+                          </div>
                         </div>
-                      </div>
-                      <button 
-                        onClick={() => handleDeleteDish(item._id)}
-                        className="text-red-500 hover:text-red-700 hover:bg-red-50 px-3 py-1.5 rounded-md text-sm font-semibold transition-colors"
-                      >
-                        Delete
-                      </button>
+                      )}
                     </div>
                   ))
                 )}

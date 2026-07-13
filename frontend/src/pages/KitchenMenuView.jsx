@@ -186,8 +186,12 @@ export default function KitchenMenuView() {
         />
         <div className="absolute inset-0 bg-linear-to-t from-black/80 to-transparent" />
         <div className="absolute bottom-0 left-0 p-6 text-white max-w-4xl">
-          <span className="bg-green-600 text-xs font-bold px-2.5 py-1 rounded">
-            ● {kitchen.preference || "VEG"}
+          <span className={`text-xs font-bold px-2.5 py-1 rounded ${
+            kitchen.preference === 'Non-Veg' ? 'bg-red-600' :
+            kitchen.preference === 'Both' ? 'bg-blue-600' :
+            'bg-green-600'
+          }`}>
+            ● {kitchen.preference || "Veg"}
           </span>
           <h1 className="text-3xl font-bold mt-2 text-white">
             {kitchen.name || "Default Kitchen Name"}
