@@ -209,7 +209,7 @@ const Navbar = () => {
           ) : (
             <li>
               <a href="/vendorSignup" className="text-fuchsia-500 hover:text-fuchsia-700 transition-colors py-1 px-2 rounded">
-                Vendor Signup
+                Vendor Login
               </a>
             </li>
           )}
