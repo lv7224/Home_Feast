@@ -20,6 +20,8 @@ const CookSchema = new mongoose.Schema({
     enum: ["Veg", "Non-Veg", "Both"],
     default: "Veg",
   },
+  bannerImage: { type: String, default: "" },
+  description: { type: String, default: "" },
   pricingPlans: {
     daily: { type: Number, default: 0 },
     weekly: { type: Number, default: 0 },

@@ -15,6 +15,10 @@ export default function KitchenMenuView() {
   const [isRatingUpdating, setIsRatingUpdating] = useState(false);
   const [hasRatedKitchen, setHasRatedKitchen] = useState(false);
 
+  const currentUser = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('currentUser') || 'null') : null;
+  const currentAdmin = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('currentAdmin') || 'null') : null;
+  const canModifyRating = Boolean(currentUser?.email || currentAdmin?.email);
+
   useEffect(() => {
     const savedCart = localStorage.getItem('homefeastCart');
     if (savedCart) {
@@ -128,6 +132,12 @@ export default function KitchenMenuView() {
 
   const handleRatingChange = async (delta) => {
     if (!kitchenId || hasRatedKitchen) return;
+
+    if (!canModifyRating) {
+      setRatingMessage("Please log in as a user or admin to rate this kitchen.");
+      return;
+    }
+
     setIsRatingUpdating(true);
     setRatingMessage("");
 
@@ -193,22 +203,26 @@ export default function KitchenMenuView() {
         <div className="flex gap-4 text-sm items-center flex-wrap">
           <span className="font-bold text-yellow-500">★ {Number(kitchen.rating || 0).toFixed(1)}</span>
           {!hasRatedKitchen && (
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => handleRatingChange(0.5)}
-                disabled={isRatingUpdating}
-                className="rounded-full border border-green-500 px-2.5 py-1 text-xs font-semibold text-green-600 hover:bg-green-50 disabled:opacity-50"
-              >
-                +0.5
-              </button>
-              <button
-                onClick={() => handleRatingChange(-0.5)}
-                disabled={isRatingUpdating}
-                className="rounded-full border border-red-500 px-2.5 py-1 text-xs font-semibold text-red-600 hover:bg-red-50 disabled:opacity-50"
-              >
-                -0.5
-              </button>
-            </div>
+            canModifyRating ? (
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => handleRatingChange(0.5)}
+                  disabled={isRatingUpdating}
+                  className="rounded-full border border-green-500 px-2.5 py-1 text-xs font-semibold text-green-600 hover:bg-green-50 disabled:opacity-50"
+                >
+                  +0.5
+                </button>
+                <button
+                  onClick={() => handleRatingChange(-0.5)}
+                  disabled={isRatingUpdating}
+                  className="rounded-full border border-red-500 px-2.5 py-1 text-xs font-semibold text-red-600 hover:bg-red-50 disabled:opacity-50"
+                >
+                  -0.5
+                </button>
+              </div>
+            ) : (
+              <span className="text-xs text-gray-500">Login to rate this kitchen</span>
+            )
           )}
           <span className="text-gray-600">📍 {kitchen.location || "Location not provided"}</span>
         </div>

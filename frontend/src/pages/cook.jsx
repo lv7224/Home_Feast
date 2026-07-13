@@ -12,7 +12,7 @@ export default function Cook() {
     name: "",
     description: "",
     location: "",
-    preference: "VEG",
+    preference: "Veg",
     bannerImage: ""
   });
 
@@ -21,7 +21,7 @@ export default function Cook() {
   const [orders, setOrders] = useState([]);
 
   // State for New Dish Form
-  const [newDish, setNewDish] = useState({ name: '', price: '', category: '', description: '', image: '' });
+  const [newDish, setNewDish] = useState({ name: '', price: '', category: '', description: '', image: '', mealType: 'Veg' });
 
   // 1. FETCH DATA FROM MONGODB (ON LOAD)
   useEffect(() => {
@@ -63,7 +63,13 @@ export default function Cook() {
   }, [vendorId]);
 
   const handleProfileChange = (e) => {
-    setProfile({ ...profile, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setProfile({ ...profile, [name]: value });
+
+    if (name === 'preference') {
+      const nextMealType = value === 'Non-Veg' ? 'Non-Veg' : value === 'Both' ? 'Veg' : 'Veg';
+      setNewDish((prev) => ({ ...prev, mealType: nextMealType }));
+    }
   };
 
   // 2. SAVE PROFILE EDITS TO MONGODB
@@ -88,6 +94,8 @@ export default function Cook() {
     e.preventDefault();
     if (!newDish.name || !newDish.price) return;
     
+    const resolvedMealType = profile.preference === 'Non-Veg' ? 'Non-Veg' : profile.preference === 'Both' ? newDish.mealType : 'Veg';
+
     const dishPayload = {
       name: newDish.name,
       price: parseFloat(newDish.price),
@@ -96,7 +104,7 @@ export default function Cook() {
       image: newDish.image,
       kitchenId: vendorId,
       cook: vendorId,
-      mealType: 'Veg'
+      mealType: resolvedMealType
     };
 
     try {
@@ -111,7 +119,7 @@ export default function Cook() {
       const savedDish = await response.json(); // Backend should return the created MongoDB document with its _id
       
       setMenuItems([...menuItems, savedDish]);
-      setNewDish({ name: '', price: '', category: '', description: '', image: '' }); // Reset form
+      setNewDish({ name: '', price: '', category: '', description: '', image: '', mealType: profile.preference === 'Both' ? 'Veg' : profile.preference === 'Non-Veg' ? 'Non-Veg' : 'Veg' }); // Reset form
     } catch (err) {
       alert("Error adding dish: " + err.message);
     }
@@ -262,9 +270,9 @@ export default function Cook() {
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Dietary Preference</label>
                     <select name="preference" value={profile.preference} onChange={handleProfileChange} className="w-full border border-gray-300 rounded-lg px-4 py-2 outline-none">
-                      <option value="VEG">Vegetarian Only</option>
-                      <option value="NON_VEG">Non-Vegetarian</option>
-                      <option value="BOTH">Veg & Non-Veg</option>
+                      <option value="Veg">Vegetarian Only</option>
+                      <option value="Non-Veg">Non-Vegetarian</option>
+                      <option value="Both">Veg & Non-Veg</option>
                     </select>
                   </div>
                 </div>
@@ -399,6 +407,19 @@ export default function Cook() {
                   <label className="block text-xs font-medium text-gray-700 mb-1">Description</label>
                   <input type="text" value={newDish.description} onChange={(e) => setNewDish({...newDish, description: e.target.value})} className="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none" placeholder="Brief details about the dish..." />
                 </div>
+                {profile.preference === 'Both' && (
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Meal Type</label>
+                    <select
+                      value={newDish.mealType}
+                      onChange={(e) => setNewDish({ ...newDish, mealType: e.target.value })}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none"
+                    >
+                      <option value="Veg">Veg</option>
+                      <option value="Non-Veg">Non-Veg</option>
+                    </select>
+                  </div>
+                )}
                 <div className="md:col-span-2">
                   <label className="block text-xs font-medium text-gray-700 mb-1">Image URL</label>
                   <input type="url" value={newDish.image} onChange={(e) => setNewDish({...newDish, image: e.target.value})} className="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none" placeholder="https://example.com/dish.jpg" />

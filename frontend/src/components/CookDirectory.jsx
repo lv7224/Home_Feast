@@ -312,15 +312,31 @@ export default function CookDirectory() {
         <div>
           <div className="text-xs font-bold text-gray-400 mb-4 uppercase tracking-wider">Showing {filteredCooks.length} Local Kitchens</div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredCooks.map((cook) => (
+            {filteredCooks.map((cook) => {
+              const kitchenImage = cook.bannerImage || cook.image || cook.imageUrl || cook.profileImage;
+              return (
               <div
                 key={cook._id}
                 className="group bg-white border border-gray-200/80 rounded-2xl overflow-hidden shadow-sm hover:shadow-md hover:border-gray-300 transition-all duration-300 flex flex-col justify-between"
               >
                 <div>
                   {/* Banner Container */}
-                  <div className="h-44 bg-linear-to-br from-orange-50 to-orange-100/60 relative flex items-center justify-center text-orange-400/80 font-black text-5xl select-none group-hover:scale-[1.01] transition-transform duration-300">
-                    {cook.kitchenName[0]}
+                  <div className="h-44 bg-linear-to-br from-orange-50 to-orange-100/60 relative overflow-hidden group-hover:scale-[1.01] transition-transform duration-300">
+                    {kitchenImage ? (
+                      <img
+                        src={kitchenImage}
+                        alt={`${cook.kitchenName} banner`}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.style.display = 'none';
+                        }}
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-orange-400/80 font-black text-5xl select-none">
+                        {cook.kitchenName?.[0] || "K"}
+                      </div>
+                    )}
                     {cook.mealTypePreference && (
                       <span className={`absolute top-3 right-3 text-[10px] font-black uppercase px-2 py-0.5 rounded shadow-sm border tracking-wide ${cook.mealTypePreference === "Veg"
                         ? "bg-green-50 text-green-700 border-green-200"
@@ -369,7 +385,8 @@ export default function CookDirectory() {
                   </a>
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}
