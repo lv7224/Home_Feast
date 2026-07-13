@@ -1,6 +1,7 @@
 import "./App.css";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 import Home from "./pages/home";
 import UserLogin from "./pages/userLogin";
 import UserSignup from "./pages/userSignup";
@@ -14,6 +15,9 @@ import Checkout from "./pages/Checkout";
 import UserDashboard from "./pages/userDashboard";
 
 function App() {
+  const location = useLocation();
+  const showFooter = location.pathname === "/";
+
   return (
     <>
       <main className="min-h-screen bg-gray-50">
@@ -54,6 +58,7 @@ function App() {
           {/* User Orders Dashboard */}
           <Route path="/userDashboard" element={<UserDashboard />} />
         </Routes>
+        {showFooter && <Footer />}
       </main>
     </>
   );

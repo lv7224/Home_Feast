@@ -1,16 +1,23 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 export default function AdminDashboard() {
   // --- STATE MANAGEMENT ---
-  const [activeTab, setActiveTab] = useState("cooks"); // cooks, users, subscriptions, categories, disputes
+  const [activeTab, setActiveTab] = useState("cooks"); // cooks, users, subscriptions, categories
   const [cooks, setCooks] = useState([]);
   const [users, setUsers] = useState([]);
   const [subscriptions, setSubscriptions] = useState([]);
-  const [disputes, setDisputes] = useState([]);
   const [cuisines, setCuisines] = useState([]); // Loaded dynamically from MongoDB now
   const [newCuisine, setNewCuisine] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const currentAdmin = JSON.parse(localStorage.getItem("currentAdmin") || "null");
+    if (!currentAdmin?.email) {
+      navigate("/admin", { replace: true });
+    }
+  }, [navigate]);
 
   // --- REAL DATA FETCH FROM MONGODB VIA API ---
   useEffect(() => {
@@ -22,14 +29,12 @@ export default function AdminDashboard() {
       fetch("/api/cooks").then((res) => { if (!res.ok) throw new Error("Cooks collection unreachable"); return res.json(); }),
       fetch("/api/users").then((res) => { if (!res.ok) throw new Error("Users collection unreachable"); return res.json(); }),
       fetch("/api/subscriptions").then((res) => { if (!res.ok) throw new Error("Subscriptions collection unreachable"); return res.json(); }),
-      fetch("/api/disputes").then((res) => { if (!res.ok) throw new Error("Disputes collection unreachable"); return res.json(); }),
       fetch("/api/cuisines").then((res) => { if (!res.ok) throw new Error("Cuisines collection unreachable"); return res.json(); })
     ])
-      .then(([cooksData, usersData, subsData, disputesData, cuisinesData]) => {
+      .then(([cooksData, usersData, subsData, cuisinesData]) => {
         setCooks(cooksData);
         setUsers(usersData);
         setSubscriptions(subsData);
-        setDisputes(disputesData);
         // Assumes your database returns an array of objects or strings e.g., [{ name: 'Punjabi' }] or ['Punjabi']
         setCuisines(Array.isArray(cuisinesData) ? cuisinesData : []);
         setLoading(false);
@@ -64,22 +69,6 @@ export default function AdminDashboard() {
       .catch((err) => alert(err.message));
   };
 
-  const handleResolveDispute = (id) => {
-    fetch(`/api/disputes/${id}/resolve`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status: "Resolved" }),
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error("Database failed to update dispute record state.");
-        return res.json();
-      })
-      .then(() => {
-        setDisputes(disputes.map(dispute => dispute._id === id ? { ...dispute, status: "Resolved" } : dispute));
-      })
-      .catch((err) => alert(err.message));
-  };
-
   const handleDeleteUser = async (id, name) => {
     const isConfirmed = window.confirm(`Are you sure you want to delete user: ${name}? This action cannot be undone.`);
     if (!isConfirmed) return;
@@ -97,6 +86,27 @@ export default function AdminDashboard() {
 
       setUsers((prevUsers) => prevUsers.filter((user) => (user._id || user.id) !== id));
       alert(data.message || "User deleted successfully.");
+    } catch (err) {
+      alert(err.message);
+    }
+  };
+
+  const handleAdjustCookRating = async (id, delta) => {
+    try {
+      const response = await fetch(`/api/kitchens/${id}/rating`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ delta }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to update kitchen rating.");
+      }
+
+      setCooks((prevCooks) => prevCooks.map((cook) =>
+        cook._id === id ? { ...cook, rating: data.kitchen?.rating ?? cook.rating } : cook
+      ));
     } catch (err) {
       alert(err.message);
     }
@@ -189,12 +199,6 @@ export default function AdminDashboard() {
           >
             🌶️ Cuisines & Categories
           </button>
-          <button 
-            onClick={() => setActiveTab("disputes")}
-            className={`w-full flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition ${activeTab === "disputes" ? "bg-green-600 text-white" : "hover:bg-gray-800 text-gray-400 hover:text-white"}`}
-          >
-            ⚠️ Complaints & Disputes
-          </button>
         </nav>
       </aside>
 
@@ -214,6 +218,7 @@ export default function AdminDashboard() {
                   <th className="p-4">Kitchen / Chef</th>
                   <th className="p-4">Service Area</th>
                   <th className="p-4">Verification Status</th>
+                  <th className="p-4">Vendor Rating</th>
                   <th className="p-4 text-right">Actions</th>
                 </tr>
               </thead>
@@ -231,6 +236,13 @@ export default function AdminDashboard() {
                       <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${status === "Approved" ? "bg-green-50 text-green-700" : "bg-amber-50 text-amber-700"}`}>
                         {status}
                       </span>
+                    </td>
+                    <td className="p-4">
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold text-yellow-600">★ {Number(cook.rating || 0).toFixed(1)}</span>
+                        <button onClick={() => handleAdjustCookRating(cook._id, 0.5)} className="text-xs font-semibold text-green-600 hover:text-green-700">+0.5</button>
+                        <button onClick={() => handleAdjustCookRating(cook._id, -0.5)} className="text-xs font-semibold text-red-600 hover:text-red-700">-0.5</button>
+                      </div>
                     </td>
                     <td className="p-4 text-right">
                       {status === "Pending Approval" && (
@@ -354,47 +366,6 @@ export default function AdminDashboard() {
                 })}
               </div>
             </div>
-          </div>
-        )}
-
-        {/* TAB 5: COMPLAINTS & DISPUTES */}
-        {activeTab === "disputes" && (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-gray-50 border-b text-gray-400 text-xs font-semibold uppercase tracking-wider">
-                  <th className="p-4">Filing Customer</th>
-                  <th className="p-4">Accused Provider</th>
-                  <th className="p-4">Reported Grievance Details</th>
-                  <th className="p-4">Resolution Status</th>
-                  <th className="p-4 text-right">Resolution Ticket Action</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y text-sm text-gray-700">
-                {disputes.map(dispute => (
-                  <tr key={dispute._id} className="hover:bg-gray-50/50">
-                    <td className="p-4 font-semibold text-gray-800">{dispute.userName}</td>
-                    <td className="p-4 text-gray-600">{dispute.kitchenName}</td>
-                    <td className="p-4 text-gray-500 italic">"{dispute.issue}"</td>
-                    <td className="p-4">
-                      <span className={`px-2 py-0.5 rounded text-xs font-semibold ${dispute.status === "Open" ? "bg-red-50 text-red-700" : "bg-green-50 text-green-700"}`}>
-                        {dispute.status}
-                      </span>
-                    </td>
-                    <td className="p-4 text-right">
-                      {dispute.status === "Open" && (
-                        <button 
-                          onClick={() => handleResolveDispute(dispute._id)}
-                          className="bg-gray-800 hover:bg-gray-900 text-white px-2.5 py-1.5 rounded-lg text-xs font-medium transition"
-                        >
-                          Mark Resolved
-                        </button>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
           </div>
         )}
 

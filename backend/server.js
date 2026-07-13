@@ -7,6 +7,7 @@ import User from "./models/User.js";
 import Cook from "./models/Cook.js";
 import Menu from "./models/Menu.js";
 import Order from "./models/Order.js";
+import Dispute from "./models/Dispute.js";
 
 dotenv.config();
 
@@ -243,7 +244,38 @@ app.get("/api/subscriptions", async (req, res) => {
 });
 
 app.get("/api/disputes", async (req, res) => {
-  res.status(200).json([]);
+  try {
+    const disputes = await Dispute.find({}).sort({ createdAt: -1 });
+    res.status(200).json(disputes);
+  } catch (error) {
+    console.error("Error fetching disputes:", error);
+    res.status(500).json({ message: "Server error while fetching disputes." });
+  }
+});
+
+app.post("/api/disputes", async (req, res) => {
+  try {
+    const { role, name, email, vendorName, orderId, issue } = req.body || {};
+
+    if (!name || !email || !issue) {
+      return res.status(400).json({ message: "Name, email, and issue description are required." });
+    }
+
+    const dispute = new Dispute({
+      role,
+      name,
+      email,
+      vendorName,
+      orderId,
+      issue,
+    });
+
+    await dispute.save();
+    res.status(201).json({ message: "Complaint submitted successfully.", dispute });
+  } catch (error) {
+    console.error("Error creating dispute:", error);
+    res.status(500).json({ message: "Failed to submit complaint." });
+  }
 });
 
 app.get("/api/cuisines", async (req, res) => {
@@ -277,7 +309,22 @@ app.patch("/api/cooks/:id/approve", async (req, res) => {
 });
 
 app.patch("/api/disputes/:id/resolve", async (req, res) => {
-  res.status(200).json({ message: "Dispute resolved." });
+  try {
+    const updatedDispute = await Dispute.findByIdAndUpdate(
+      req.params.id,
+      { status: "Resolved" },
+      { new: true }
+    );
+
+    if (!updatedDispute) {
+      return res.status(404).json({ message: "Dispute not found." });
+    }
+
+    res.status(200).json({ message: "Dispute resolved.", dispute: updatedDispute });
+  } catch (error) {
+    console.error("Error resolving dispute:", error);
+    res.status(500).json({ message: "Failed to resolve dispute." });
+  }
 });
 
 // 6. Kitchen Profile Endpoints
@@ -316,6 +363,33 @@ app.put("/api/kitchens/:id", async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error updating kitchen profile" });
+  }
+});
+
+app.patch("/api/kitchens/:id/rating", async (req, res) => {
+  try {
+    const { delta, value } = req.body || {};
+    const kitchen = await Cook.findById(req.params.id);
+
+    if (!kitchen) {
+      return res.status(404).json({ message: "Kitchen not found" });
+    }
+
+    const currentRating = Number(kitchen.rating || 0);
+    const parsedDelta = Number(delta || 0);
+    const parsedValue = Number(value);
+    const nextRating = Number.isFinite(parsedValue)
+      ? parsedValue
+      : currentRating + parsedDelta;
+
+    const clampedRating = Math.max(0, Math.min(5, Number(nextRating.toFixed(1))));
+    kitchen.rating = clampedRating;
+    await kitchen.save();
+
+    res.status(200).json({ message: "Rating updated successfully", kitchen });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error updating kitchen rating" });
   }
 });
 

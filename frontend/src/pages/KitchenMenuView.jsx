@@ -11,6 +11,9 @@ export default function KitchenMenuView() {
   const [menuItemsMap, setMenuItemsMap] = useState({}); // Lookup map to get full item details in cart
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [ratingMessage, setRatingMessage] = useState("");
+  const [isRatingUpdating, setIsRatingUpdating] = useState(false);
+  const [hasRatedKitchen, setHasRatedKitchen] = useState(false);
 
   useEffect(() => {
     const savedCart = localStorage.getItem('homefeastCart');
@@ -31,6 +34,11 @@ export default function KitchenMenuView() {
       }
     }
   }, []);
+
+  useEffect(() => {
+    const storedRatings = JSON.parse(localStorage.getItem('homefeastRatedKitchens') || '{}');
+    setHasRatedKitchen(Boolean(kitchenId && storedRatings[kitchenId]));
+  }, [kitchenId]);
 
   useEffect(() => {
     const fetchKitchenAndMenu = async () => {
@@ -118,6 +126,37 @@ export default function KitchenMenuView() {
     }, 0);
   };
 
+  const handleRatingChange = async (delta) => {
+    if (!kitchenId || hasRatedKitchen) return;
+    setIsRatingUpdating(true);
+    setRatingMessage("");
+
+    try {
+      const response = await fetch(`/api/kitchens/${kitchenId}/rating`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ delta }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || "Unable to update rating.");
+      }
+
+      const storedRatings = JSON.parse(localStorage.getItem('homefeastRatedKitchens') || '{}');
+      storedRatings[kitchenId] = true;
+      localStorage.setItem('homefeastRatedKitchens', JSON.stringify(storedRatings));
+
+      setKitchen((prev) => prev ? { ...prev, rating: data.kitchen?.rating ?? prev.rating } : prev);
+      setHasRatedKitchen(true);
+      setRatingMessage(delta > 0 ? "Thanks! Rating increased." : "Rating decreased.");
+    } catch (err) {
+      setRatingMessage(err.message || "Unable to update rating.");
+    } finally {
+      setIsRatingUpdating(false);
+    }
+  };
+
   if (loading) return <div className="text-center p-10 font-medium text-gray-600">Loading Feast Menu...</div>;
   if (error) return <div className="text-center p-10 text-red-600 font-medium">⚠️ {error}</div>;
   if (!kitchen) return <div className="text-center p-10 text-gray-500">Kitchen profile not found.</div>;
@@ -151,8 +190,26 @@ export default function KitchenMenuView() {
 
       {/* Info Bar */}
       <div className="bg-white border-b sticky top-0 z-10 shadow-sm px-6 py-4 flex justify-between items-center">
-        <div className="flex gap-4 text-sm items-center">
-          <span className="font-bold text-yellow-500">★ {kitchen.rating || "New"}</span>
+        <div className="flex gap-4 text-sm items-center flex-wrap">
+          <span className="font-bold text-yellow-500">★ {Number(kitchen.rating || 0).toFixed(1)}</span>
+          {!hasRatedKitchen && (
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => handleRatingChange(0.5)}
+                disabled={isRatingUpdating}
+                className="rounded-full border border-green-500 px-2.5 py-1 text-xs font-semibold text-green-600 hover:bg-green-50 disabled:opacity-50"
+              >
+                +0.5
+              </button>
+              <button
+                onClick={() => handleRatingChange(-0.5)}
+                disabled={isRatingUpdating}
+                className="rounded-full border border-red-500 px-2.5 py-1 text-xs font-semibold text-red-600 hover:bg-red-50 disabled:opacity-50"
+              >
+                -0.5
+              </button>
+            </div>
+          )}
           <span className="text-gray-600">📍 {kitchen.location || "Location not provided"}</span>
         </div>
         <div className="flex gap-2">
@@ -165,6 +222,12 @@ export default function KitchenMenuView() {
           )}
         </div>
       </div>
+
+      {ratingMessage && (
+        <div className="mx-6 mt-4 rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm text-gray-600 shadow-sm">
+          {ratingMessage}
+        </div>
+      )}
 
       {/* Content Columns */}
       <div className="max-w-6xl mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-3 gap-8">

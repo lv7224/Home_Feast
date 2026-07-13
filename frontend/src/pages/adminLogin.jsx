@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const ADMIN_CREDENTIALS = {
@@ -13,6 +13,13 @@ const AdminLogin = () => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const currentAdmin = JSON.parse(localStorage.getItem('currentAdmin') || 'null');
+    if (currentAdmin?.email) {
+      navigate('/adminDashboard', { replace: true });
+    }
+  }, [navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -33,6 +40,11 @@ const AdminLogin = () => {
         email.trim().toLowerCase() === ADMIN_CREDENTIALS.email &&
         password === ADMIN_CREDENTIALS.password
       ) {
+        localStorage.setItem('currentAdmin', JSON.stringify({
+          email: ADMIN_CREDENTIALS.email,
+          name: 'Administrator',
+        }));
+        window.dispatchEvent(new Event('authChange'));
         navigate('/adminDashboard');
       } else {
         setError('Invalid credentials. Please try again.');

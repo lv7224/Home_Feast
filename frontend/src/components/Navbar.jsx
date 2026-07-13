@@ -4,9 +4,11 @@ import { useNavigate } from "react-router-dom";
 const loadSession = () => {
   const storedUser = localStorage.getItem("currentUser");
   const storedVendor = localStorage.getItem("currentVendor") || localStorage.getItem("vendor");
+  const storedAdmin = localStorage.getItem("currentAdmin");
   return {
     user: storedUser ? JSON.parse(storedUser) : null,
     vendor: storedVendor ? JSON.parse(storedVendor) : null,
+    admin: storedAdmin ? JSON.parse(storedAdmin) : null,
   };
 };
 
@@ -14,14 +16,17 @@ const Navbar = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [vendor, setVendor] = useState(null);
+  const [admin, setAdmin] = useState(null);
   const [showUserDropdown, setShowUserDropdown] = useState(false);
   const [showVendorDropdown, setShowVendorDropdown] = useState(false);
+  const [showAdminDropdown, setShowAdminDropdown] = useState(false);
 
   useEffect(() => {
     const syncSession = () => {
       const session = loadSession();
       setUser(session.user);
       setVendor(session.vendor);
+      setAdmin(session.admin);
     };
 
     syncSession();
@@ -47,6 +52,14 @@ const Navbar = () => {
     localStorage.removeItem("vendor");
     setVendor(null);
     setShowVendorDropdown(false);
+    window.dispatchEvent(new Event("authChange"));
+    navigate("/");
+  };
+
+  const handleAdminLogout = () => {
+    localStorage.removeItem("currentAdmin");
+    setAdmin(null);
+    setShowAdminDropdown(false);
     window.dispatchEvent(new Event("authChange"));
     navigate("/");
   };
@@ -200,11 +213,54 @@ const Navbar = () => {
               </a>
             </li>
           )}
-          <li>
-            <a href="/admin" className="text-purple-500 hover:text-purple-700 transition-colors py-1 px-2 rounded">
-              Admin Login
-            </a>
-          </li>
+          {admin ? (
+            <li className="relative">
+              <button
+                onClick={() => {
+                  setShowAdminDropdown(!showAdminDropdown);
+                  setShowUserDropdown(false);
+                  setShowVendorDropdown(false);
+                }}
+                className="flex items-center gap-2 focus:outline-none bg-white py-1.5 px-3 border border-purple-200 rounded-full shadow-sm hover:bg-purple-50 transition-colors"
+              >
+                <div className="w-7 h-7 bg-purple-500 text-white font-bold text-xs rounded-full flex items-center justify-center uppercase shadow-inner">
+                  AD
+                </div>
+                <div className="text-gray-700 text-sm hidden sm:inline max-w-32 truncate">
+                  Admin Panel
+                </div>
+                <div className="text-gray-400 text-[10px] ml-0.5">▼</div>
+              </button>
+
+              {showAdminDropdown && (
+                <div className="absolute right-0 mt-2 w-56 bg-white border border-gray-100 rounded-xl shadow-lg py-2 z-50">
+                  <div className="px-4 py-2 border-b border-gray-100">
+                    <p className="text-xs font-semibold text-purple-500 uppercase tracking-wider">Admin Account</p>
+                    <p className="text-sm font-medium text-gray-800 truncate">{admin.name || "Administrator"}</p>
+                    <p className="text-xs text-gray-500 truncate">{admin.email}</p>
+                  </div>
+                  <a
+                    href="/adminDashboard"
+                    className="block px-4 py-2 text-sm text-purple-600 hover:bg-purple-50 font-medium transition-colors"
+                  >
+                    Admin Dashboard
+                  </a>
+                  <button
+                    onClick={handleAdminLogout}
+                    className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 font-medium transition-colors"
+                  >
+                    Logout
+                  </button>
+                </div>
+              )}
+            </li>
+          ) : (
+            <li>
+              <a href="/admin" className="text-purple-500 hover:text-purple-700 transition-colors py-1 px-2 rounded">
+                Admin Login
+              </a>
+            </li>
+          )}
         </ul>
       </div>
     </nav>
