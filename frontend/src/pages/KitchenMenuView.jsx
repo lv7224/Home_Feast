@@ -261,11 +261,12 @@ export default function KitchenMenuView() {
                 <div className="divide-y divide-gray-100">
                   {items.map((item) => {
                     const qty = cart[item._id] || 0;
+                    const dishImage = item.image || item.imageUrl || "";
                     return (
                       <div key={item._id} className="py-4 flex justify-between items-start gap-4">
                         <div className="flex items-start gap-4 flex-1">
-                          {item.image ? (
-                            <img src={item.image} alt={item.name} className="w-20 h-20 object-cover rounded-lg border" onError={(e) => { e.target.onerror = null; e.target.style.display = 'none'; }} />
+                          {dishImage ? (
+                            <img src={dishImage} alt={item.name} className="w-20 h-20 object-cover rounded-lg border" onError={(e) => { e.target.onerror = null; e.target.style.display = 'none'; }} />
                           ) : null}
                           <div>
                             <h4 className="font-semibold text-gray-900">{item.name}</h4>
