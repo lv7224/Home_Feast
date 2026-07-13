@@ -577,7 +577,7 @@ export default function Cook() {
                       ) : (
                         <div className="flex justify-between items-start gap-4">
                           <div className="flex items-start gap-4 flex-1">
-                            <div className="min-w-[88px]">
+                            <div className="min-w-22">
                               <div className="text-[10px] text-gray-400 uppercase tracking-[0.15em] mb-2">Dish image</div>
                               {item.image ? (
                                 <img src={item.image} alt={item.name} className="w-20 h-20 object-cover rounded-lg border" />
