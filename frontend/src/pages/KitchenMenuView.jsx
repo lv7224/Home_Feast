@@ -175,10 +175,10 @@ export default function KitchenMenuView() {
     <div className="min-h-screen bg-gray-50 text-gray-800">
       {/* Hero Banner */}
       <div className="relative h-64 bg-gray-900">
-        <img 
-          src={kitchen.bannerImage && /^https?:\/\//i.test(kitchen.bannerImage) ? kitchen.bannerImage : "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=1000&auto=format&fit=crop"} 
-          alt={kitchen.name || "Kitchen Banner"} 
-          className="w-full h-full object-cover opacity-60" 
+        <img
+          src={kitchen.bannerImage && /^https?:\/\//i.test(kitchen.bannerImage) ? kitchen.bannerImage : "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=1000&auto=format&fit=crop"}
+          alt={kitchen.name || "Kitchen Banner"}
+          className="w-full h-full object-cover opacity-60"
           onError={(e) => {
             e.target.onerror = null;
             e.target.src = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=1000&auto=format&fit=crop";
@@ -186,11 +186,10 @@ export default function KitchenMenuView() {
         />
         <div className="absolute inset-0 bg-linear-to-t from-black/80 to-transparent" />
         <div className="absolute bottom-0 left-0 p-6 text-white max-w-4xl">
-          <span className={`text-xs font-bold px-2.5 py-1 rounded ${
-            kitchen.preference === 'Non-Veg' ? 'bg-red-600' :
-            kitchen.preference === 'Both' ? 'bg-blue-600' :
-            'bg-green-600'
-          }`}>
+          <span className={`text-xs font-bold px-2.5 py-1 rounded ${kitchen.preference === 'Non-Veg' ? 'bg-red-600' :
+              kitchen.preference === 'Veg/Non-Veg' ? 'bg-blue-600' :
+                'bg-green-600'
+            }`}>
             ● {kitchen.preference || "Veg"}
           </span>
           <h1 className="text-3xl font-bold mt-2 text-white">
@@ -300,7 +299,7 @@ export default function KitchenMenuView() {
         <div className="lg:col-span-1">
           <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 sticky top-24">
             <h3 className="text-lg font-bold border-b pb-3 mb-4 text-gray-900">Basket</h3>
-            
+
             {Object.keys(cart).length === 0 ? (
               <p className="text-sm text-gray-400 text-center py-6">Your basket is empty.</p>
             ) : (
@@ -320,17 +319,17 @@ export default function KitchenMenuView() {
                     );
                   })}
                 </div>
-                
+
                 {/* Total Billing */}
                 <div className="border-t pt-3 flex justify-between items-center font-bold text-gray-900">
                   <span>Subtotal:</span>
                   <span>₹{calculateTotal()}</span>
                 </div>
-                  <a href="/checkout">
-                <button className="w-full bg-orange-500 text-white font-bold py-2.5 rounded-xl mt-4 shadow hover:bg-orange-600 transition-colors cursor-pointer">
-                  Proceed to Checkout
-                </button>
-                  </a>
+                <a href="/checkout">
+                  <button className="w-full bg-orange-500 text-white font-bold py-2.5 rounded-xl mt-4 shadow hover:bg-orange-600 transition-colors cursor-pointer">
+                    Proceed to Checkout
+                  </button>
+                </a>
               </>
             )}
           </div>
