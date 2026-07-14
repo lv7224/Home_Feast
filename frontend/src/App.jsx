@@ -20,7 +20,7 @@ function App() {
 
   return (
     <>
-      <main className="min-h-screen bg-gray-50">
+      <main className="min-h-screen overflow-x-hidden bg-slate-50 text-slate-900">
         <Navbar />
         <Routes>
           {/* Main Marketplace View */}

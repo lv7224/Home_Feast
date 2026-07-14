@@ -90,8 +90,8 @@ const UserSignup = () => {
   };
 
   return (
-    <div className="flex items-center justify-center pt-12 px-4 pb-12">
-      <div className="max-w-md w-full space-y-6 bg-white p-8 rounded-xl shadow-md border border-gray-100">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-3 py-8 sm:px-4 lg:px-8">
+      <div className="max-w-md w-full space-y-6 bg-white p-6 sm:p-8 rounded-xl shadow-md border border-gray-100">
         <div className="text-center">
           <h2 className="text-3xl font-extrabold text-gray-900">Create Account</h2>
           <p className="mt-2 text-sm text-gray-600">

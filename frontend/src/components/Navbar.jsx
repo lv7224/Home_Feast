@@ -65,12 +65,12 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-gray-100 border-b border-gray-200 p-4 flex flex-col md:flex-row justify-between items-center gap-4 relative z-50">
+    <nav className="bg-gray-100 border-b border-gray-200 px-3 py-4 sm:px-4 lg:px-6 flex flex-col lg:flex-row justify-between items-center gap-4 relative z-50">
       {/* Logo Section */}
-      <div className="ml-20">
+      <div className="w-full lg:w-auto flex justify-center lg:justify-start">
         <a href="/" className="flex items-center">
-          <img src="/logo.svg" alt="Home Feast Logo" className="w-15 h-15 object-contain" />
-          <h1 className="text-4xl font-bold text-green-500 ml-5">HOME FEAST</h1>
+          <img src="/logo.svg" alt="Home Feast Logo" className="w-12 h-12 sm:w-14 sm:h-14 object-contain" />
+          <h1 className="text-2xl sm:text-3xl font-bold text-green-500 ml-3 sm:ml-4">HOME FEAST</h1>
         </a>
       </div>
       {/* Search Bar Section */}
@@ -111,8 +111,8 @@ const Navbar = () => {
       </form> */}
 
       {/* Navigation Links / Profile Corner */}
-      <div className="flex items-center mr-20">
-        <ul className="flex items-center space-x-6 font-medium">
+      <div className="w-full lg:w-auto flex justify-center lg:justify-end">
+        <ul className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 lg:gap-4 font-medium">
           {user ? (
             <li className="relative">
               <button

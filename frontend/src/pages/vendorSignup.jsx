@@ -119,8 +119,8 @@ export default function VendorSignup() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-2xl w-full mx-auto bg-white rounded-xl shadow-md p-8 border border-gray-100">
+    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-8 px-3 sm:px-4 sm:py-10 lg:px-8 lg:py-12">
+      <div className="max-w-2xl w-full mx-auto bg-white rounded-xl shadow-md p-5 sm:p-8 border border-gray-100">
         
         {/* Form Title Heading */}
         <div className="text-center mb-8">

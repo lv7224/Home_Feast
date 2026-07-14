@@ -202,8 +202,8 @@ export default function KitchenMenuView() {
       </div>
 
       {/* Info Bar */}
-      <div className="bg-white border-b sticky top-0 z-10 shadow-sm px-6 py-4 flex justify-between items-center">
-        <div className="flex gap-4 text-sm items-center flex-wrap">
+      <div className="bg-white border-b sticky top-0 z-10 shadow-sm px-4 py-4 sm:px-6 flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
+        <div className="flex gap-3 text-sm items-center flex-wrap">
           <span className="font-bold text-yellow-500">★ {Number(kitchen.rating || 0).toFixed(1)}</span>
           {!hasRatedKitchen && (
             canModifyRating ? (
@@ -229,7 +229,7 @@ export default function KitchenMenuView() {
           )}
           <span className="text-gray-600">📍 {kitchen.location || "Location not provided"}</span>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           {kitchen.cuisines && kitchen.cuisines.length > 0 ? (
             kitchen.cuisines.map((c, i) => (
               <span key={i} className="bg-gray-100 text-xs px-3 py-1 rounded-full text-gray-700">{c}</span>
@@ -263,7 +263,7 @@ export default function KitchenMenuView() {
                     const qty = cart[item._id] || 0;
                     const dishImage = item.image || item.imageUrl || "";
                     return (
-                      <div key={item._id} className="py-4 flex justify-between items-start gap-4">
+                      <div key={item._id} className="py-4 flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-start sm:gap-4">
                         <div className="flex items-start gap-4 flex-1">
                           {dishImage ? (
                             <img src={dishImage} alt={item.name} className="w-20 h-20 object-cover rounded-lg border" onError={(e) => { e.target.onerror = null; e.target.style.display = 'none'; }} />
@@ -274,7 +274,7 @@ export default function KitchenMenuView() {
                             <p className="text-xs text-gray-500 mt-1">{item.description}</p>
                           </div>
                         </div>
-                        <div className="min-w-25">
+                        <div className="min-w-[96px] sm:min-w-[110px]">
                           {qty > 0 ? (
                             <div className="flex items-center justify-between w-full bg-orange-500 text-white rounded-lg font-bold">
                               <button onClick={() => handleUpdateCart(item._id, qty - 1)} className="px-3 py-1 cursor-pointer">-</button>
@@ -298,7 +298,7 @@ export default function KitchenMenuView() {
 
         {/* Sidebar Basket/Cart Preview */}
         <div className="lg:col-span-1">
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 sticky top-24">
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 lg:sticky lg:top-24">
             <h3 className="text-lg font-bold border-b pb-3 mb-4 text-gray-900">Basket</h3>
 
             {Object.keys(cart).length === 0 ? (

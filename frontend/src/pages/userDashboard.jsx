@@ -66,7 +66,7 @@ export default function UserDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6 lg:p-10">
+    <div className="min-h-screen bg-gray-50 px-3 py-6 sm:px-4 lg:px-8 lg:py-10">
       <div className="max-w-6xl mx-auto">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">My Orders</h1>
@@ -81,14 +81,14 @@ export default function UserDashboard() {
           ) : (
             <div className="space-y-5">
               {orders.map((order) => (
-                <div key={order._id} className="border border-gray-200 rounded-xl p-5">
+                <div key={order._id} className="border border-gray-200 rounded-xl p-4 sm:p-5">
                   <div className="flex flex-col md:flex-row md:justify-between gap-3">
                     <div>
                       <h2 className="font-semibold text-gray-900">{order.vendorName || 'Kitchen'}</h2>
                       <p className="text-sm text-gray-600">Ordered on {new Date(order.createdAt).toLocaleString()}</p>
                       <p className="text-sm text-gray-500">Delivery: {order.deliveryOption === 'selfPickup' ? 'Self Pickup' : 'Home Delivery'}</p>
                     </div>
-                    <div className="text-right">
+                    <div className="text-left sm:text-right">
                       <p className="text-sm font-semibold text-gray-700">Total ₹{order.totalAmount}</p>
                       <p className="text-sm text-orange-600">Status: {order.status}</p>
                       <p className="text-sm text-green-600">Delivery: {order.deliveryStatus || 'Pending'}</p>

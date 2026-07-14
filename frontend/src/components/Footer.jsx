@@ -79,17 +79,17 @@ const Footer = () => {
   };
 
   return (
-    <footer className="bg-gray-950 text-white border-t border-gray-800 mt-12">
-      <div className="mx-auto max-w-6xl px-6 py-10">
-        <div className="grid gap-8 lg:grid-cols-[1.5fr_1fr]">
-          <div>
-            <h2 className="text-2xl font-semibold">Need support? File a complaint or dispute.</h2>
-            <p className="mt-3 max-w-xl text-sm text-gray-300">
+    <footer className="bg-gray-950 text-white border-t border-gray-800 mt-10 sm:mt-12">
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
+        <div className="grid gap-6 lg:grid-cols-[1.3fr_1fr]">
+          <div className="space-y-4">
+            <h2 className="text-xl sm:text-2xl font-semibold leading-snug">Need support? File a complaint or dispute.</h2>
+            <p className="max-w-xl text-sm sm:text-base text-gray-300">
               Users and vendors can send complaints directly to the admin dashboard. Describe your issue clearly and the support team will review it.
             </p>
           </div>
-          <form onSubmit={handleSubmit} className="rounded-3xl border border-gray-800 bg-gray-900 p-6 shadow-xl shadow-black/20">
-            <div className="grid gap-4 sm:grid-cols-2 justify-evenly">
+          <form onSubmit={handleSubmit} className="rounded-3xl border border-gray-800 bg-gray-900 p-4 shadow-xl shadow-black/20 sm:p-6">
+            <div className="grid gap-4 sm:grid-cols-2">
               <label className="block text-sm text-gray-300">
                 I am a
                 <select

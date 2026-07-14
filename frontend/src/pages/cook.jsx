@@ -260,10 +260,10 @@ export default function Cook() {
   if (error) return <div className="min-h-screen flex items-center justify-center text-red-500">Error: {error}</div>;
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row font-sans">
+    <div className="min-h-screen bg-gray-50 flex flex-col lg:flex-row font-sans">
       
       {/* Sidebar Navigation */}
-      <div className="w-full md:w-64 bg-white border-r shadow-sm">
+      <div className="w-full lg:w-64 bg-white border-b lg:border-b-0 lg:border-r shadow-sm">
         <div className="p-6 border-b">
           <h2 className="text-2xl font-bold text-orange-600">Home Feast</h2>
           <p className="text-xs text-gray-500 mt-1">Vendor Dashboard</p>
@@ -291,7 +291,7 @@ export default function Cook() {
       </div>
 
       {/* Main Content Area */}
-      <div className="flex-1 p-6 lg:p-10">
+      <div className="flex-1 p-4 sm:p-6 lg:p-10">
         
         {/* === KITCHEN PROFILE TAB === */}
         {activeTab === 'profile' && (
@@ -438,7 +438,7 @@ export default function Cook() {
             {/* Add New Dish Form */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-8">
               <h2 className="text-lg font-bold mb-4">Add New Dish</h2>
-              <form onSubmit={handleAddDish} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+              <form onSubmit={handleAddDish} className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 items-end">
                 <div className="md:col-span-2">
                   <label className="block text-xs font-medium text-gray-700 mb-1">Dish Name</label>
                   <input type="text" value={newDish.name} onChange={(e) => setNewDish({...newDish, name: e.target.value})} className="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none" placeholder="e.g. Rajma Chawal" required />

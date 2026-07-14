@@ -6,6 +6,7 @@ export default function AdminDashboard() {
   const [cooks, setCooks] = useState([]);
   const [users, setUsers] = useState([]);
   const [subscriptions, setSubscriptions] = useState([]);
+  const [orders, setOrders] = useState([]);
   const [cuisines, setCuisines] = useState([]); // Loaded dynamically from MongoDB now
   const [newCuisine, setNewCuisine] = useState("");
   const [loading, setLoading] = useState(true);
@@ -29,12 +30,14 @@ export default function AdminDashboard() {
       fetch("/api/cooks").then((res) => { if (!res.ok) throw new Error("Cooks collection unreachable"); return res.json(); }),
       fetch("/api/users").then((res) => { if (!res.ok) throw new Error("Users collection unreachable"); return res.json(); }),
       fetch("/api/subscriptions").then((res) => { if (!res.ok) throw new Error("Subscriptions collection unreachable"); return res.json(); }),
+      fetch("/api/orders").then((res) => { if (!res.ok) throw new Error("Orders collection unreachable"); return res.json(); }),
       fetch("/api/cuisines").then((res) => { if (!res.ok) throw new Error("Cuisines collection unreachable"); return res.json(); })
     ])
-      .then(([cooksData, usersData, subsData, cuisinesData]) => {
+      .then(([cooksData, usersData, subsData, ordersData, cuisinesData]) => {
         setCooks(cooksData);
         setUsers(usersData);
         setSubscriptions(subsData);
+        setOrders(Array.isArray(ordersData) ? ordersData : []);
         // Assumes your database returns an array of objects or strings e.g., [{ name: 'Punjabi' }] or ['Punjabi']
         setCuisines(Array.isArray(cuisinesData) ? cuisinesData : []);
         setLoading(false);
@@ -86,6 +89,28 @@ export default function AdminDashboard() {
 
       setUsers((prevUsers) => prevUsers.filter((user) => (user._id || user.id) !== id));
       alert(data.message || "User deleted successfully.");
+    } catch (err) {
+      alert(err.message);
+    }
+  };
+
+  const handleDeleteCook = async (id, name) => {
+    const isConfirmed = window.confirm(`Are you sure you want to delete vendor: ${name}? This will remove the kitchen and related records.`);
+    if (!isConfirmed) return;
+
+    try {
+      const res = await fetch(`/api/cooks/${id}`, {
+        method: "DELETE",
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        throw new Error(data.message || "Database failed to delete the vendor record.");
+      }
+
+      setCooks((prevCooks) => prevCooks.filter((cook) => (cook._id || cook.id) !== id));
+      alert(data.message || "Vendor deleted successfully.");
     } catch (err) {
       alert(err.message);
     }
@@ -154,6 +179,22 @@ export default function AdminDashboard() {
       .catch((err) => alert(err.message));
   };
 
+  const getOrderStatusBadge = (order) => {
+    const deliveryStatus = (order.deliveryStatus || "Pending").toLowerCase();
+    const orderStatus = (order.status || "Placed").toLowerCase();
+    const isCompleted = deliveryStatus === "delivered" || orderStatus === "delivered" || orderStatus === "completed";
+
+    if (isCompleted) {
+      return { label: "Completed", className: "bg-emerald-50 text-emerald-700" };
+    }
+
+    if (deliveryStatus === "not accepted") {
+      return { label: "Not Accepted", className: "bg-rose-50 text-rose-700" };
+    }
+
+    return { label: "In Progress", className: "bg-amber-50 text-amber-700" };
+  };
+
   if (loading) return <div className="text-center p-10 font-medium text-gray-500">Connecting to database architecture...</div>;
   
   if (error) return (
@@ -169,7 +210,7 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-gray-50 flex">
       
       {/* SIDEBAR NAVIGATION CONTROLS */}
-      <aside className="w-64 bg-gray-900 text-gray-200 flex flex-col border-r border-gray-800">
+      <aside className="w-full lg:w-64 bg-gray-900 text-gray-200 flex flex-col border-b lg:border-b-0 lg:border-r border-gray-800">
         <div className="p-5 border-b border-gray-800 flex items-center gap-3">
           <div className="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center font-bold text-white text-sm">HF</div>
           <span className="text-lg font-bold tracking-wider text-white">ADMIN PORTAL</span>
@@ -188,6 +229,12 @@ export default function AdminDashboard() {
             👥 Manage Users
           </button>
           <button 
+            onClick={() => setActiveTab("orders")}
+            className={`w-full flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition ${activeTab === "orders" ? "bg-green-600 text-white" : "hover:bg-gray-800 text-gray-400 hover:text-white"}`}
+          >
+            🧾 Orders & Fulfillment
+          </button>
+          <button 
             onClick={() => setActiveTab("subscriptions")}
             className={`w-full flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition ${activeTab === "subscriptions" ? "bg-green-600 text-white" : "hover:bg-gray-800 text-gray-400 hover:text-white"}`}
           >
@@ -203,16 +250,17 @@ export default function AdminDashboard() {
       </aside>
 
       {/* MAIN VIEW CONTENT AREA */}
-      <main className="flex-1 p-8 overflow-y-auto">
-        <header className="mb-8 border-b pb-4 flex justify-between items-center">
+      <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
+        <header className="mb-8 border-b pb-4 flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
           <h1 className="text-2xl font-bold text-gray-800 capitalize">{activeTab.replace("-", " ")} Management</h1>
-          <div className="text-sm bg-gray-200 px-3 py-1 rounded-full text-gray-600 font-medium">Role: Primary Administrator</div>
+          <div className="text-sm bg-gray-200 px-3 py-1 rounded-full text-gray-600 font-medium self-start sm:self-auto">Role: Primary Administrator</div>
         </header>
 
         {/* TAB 1: MANAGE COOKS & APPROVALS */}
         {activeTab === "cooks" && (
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <table className="w-full text-left border-collapse">
+            <div className="overflow-x-auto">
+            <table className="w-full min-w-190 text-left border-collapse">
               <thead>
                 <tr className="bg-gray-50 border-b text-gray-400 text-xs font-semibold uppercase tracking-wider">
                   <th className="p-4">Kitchen / Chef</th>
@@ -244,7 +292,7 @@ export default function AdminDashboard() {
                         <button onClick={() => handleAdjustCookRating(cook._id, -0.5)} className="text-xs font-semibold text-red-600 hover:text-red-700">-0.5</button>
                       </div>
                     </td>
-                    <td className="p-4 text-right">
+                    <td className="p-4 text-right flex justify-end gap-2">
                       {status === "Pending Approval" && (
                         <button 
                           onClick={() => handleApproveCook(cook._id)}
@@ -253,19 +301,80 @@ export default function AdminDashboard() {
                           Approve Onboarding
                         </button>
                       )}
+                      <button
+                        onClick={() => handleDeleteCook(cook._id, cook.kitchenName)}
+                        className="bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition"
+                      >
+                        Delete Vendor
+                      </button>
                     </td>
                   </tr>
                   );
                 })}
               </tbody>
             </table>
+            </div>
           </div>
         )}
 
-        {/* TAB 2: MANAGE USERS */}
+        {/* TAB 2: MANAGE ORDERS & FULFILLMENT */}
+        {activeTab === "orders" && (
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="p-4 border-b bg-gray-50">
+              <h3 className="text-lg font-semibold text-gray-800">All Kitchen, User, and Vendor Orders</h3>
+              <p className="text-sm text-gray-500 mt-1">Complete order overview with fulfillment status for every kitchen and customer transaction.</p>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse min-w-225">
+                <thead>
+                  <tr className="bg-gray-50 border-b text-gray-400 text-xs font-semibold uppercase tracking-wider">
+                    <th className="p-4">Order ID</th>
+                    <th className="p-4">Customer</th>
+                    <th className="p-4">Kitchen / Vendor</th>
+                    <th className="p-4">Items</th>
+                    <th className="p-4">Amount</th>
+                    <th className="p-4">Status</th>
+                    <th className="p-4">Delivery</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y text-sm text-gray-700">
+                  {orders.map((order) => {
+                    const statusBadge = getOrderStatusBadge(order);
+                    return (
+                      <tr key={order._id} className="hover:bg-gray-50/50 align-top">
+                        <td className="p-4 font-mono text-xs text-gray-500">{order._id?.slice(-8).toUpperCase()}</td>
+                        <td className="p-4">
+                          <div className="font-semibold text-gray-800">{order.userName || "Guest"}</div>
+                          <div className="text-xs text-gray-500">{order.userEmail}</div>
+                        </td>
+                        <td className="p-4">
+                          <div className="font-semibold text-gray-800">{order.vendorName || "Kitchen"}</div>
+                          <div className="text-xs text-gray-500">{order.deliveryOption === "selfPickup" ? "Pickup" : "Home Delivery"}</div>
+                        </td>
+                        <td className="p-4 max-w-55">
+                          {order.cartItems?.length ? order.cartItems.map((item) => `${item.name} × ${item.qty}`).join(", ") : "No item details"}
+                        </td>
+                        <td className="p-4 font-semibold text-gray-900">₹{Number(order.totalAmount || 0).toFixed(2)}</td>
+                        <td className="p-4">
+                          <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${statusBadge.className}`}>
+                            {statusBadge.label}
+                          </span>
+                        </td>
+                        <td className="p-4 text-gray-600">{order.deliveryStatus || "Pending"}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* TAB 3: MANAGE USERS */}
         {activeTab === "users" && (
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <table className="w-full text-left border-collapse">
+            <div className="overflow-x-auto">
+            <table className="w-full min-w-160 text-left border-collapse">
               <thead>
                 <tr className="bg-gray-50 border-b text-gray-400 text-xs font-semibold uppercase tracking-wider">
                   <th className="p-4">User Name</th>
@@ -292,13 +401,15 @@ export default function AdminDashboard() {
                 ))}
               </tbody>
             </table>
+            </div>
           </div>
         )}
 
-        {/* TAB 3: MONITOR ORDERS & SUBSCRIPTIONS */}
+        {/* TAB 4: MONITOR ORDERS & SUBSCRIPTIONS */}
         {activeTab === "subscriptions" && (
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <table className="w-full text-left border-collapse">
+            <div className="overflow-x-auto">
+            <table className="w-full min-w-160 text-left border-collapse">
               <thead>
                 <tr className="bg-gray-50 border-b text-gray-400 text-xs font-semibold uppercase tracking-wider">
                   <th className="p-4">Subscriber</th>
@@ -324,10 +435,11 @@ export default function AdminDashboard() {
                 ))}
               </tbody>
             </table>
+            </div>
           </div>
         )}
 
-        {/* TAB 4: CATEGORIES AND CUISINES MANAGEMENT */}
+        {/* TAB 5: CATEGORIES AND CUISINES MANAGEMENT */}
         {activeTab === "categories" && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">

@@ -195,11 +195,11 @@ const Checkout = () => {
 if(isLoggedIn){
     // VIEW 2: LOGGED IN - CHECKOUT FORM
     return (
-        <div className="min-h-screen bg-gray-50 py-10 px-4 font-sans">
-            <div className="max-w-4xl mx-auto flex flex-col md:flex-row gap-8">
+        <div className="min-h-screen bg-gray-50 py-6 px-3 sm:px-4 lg:px-6 font-sans">
+            <div className="max-w-6xl mx-auto flex flex-col lg:flex-row gap-6 lg:gap-8">
 
                 {/* LEFT COLUMN: FORMS */}
-                <div className="flex-1">
+                <div className="flex-1 min-w-0">
                     <a href="/cart" className="flex items-center text-sm text-gray-500 hover:text-gray-800 mb-6 transition">
                         <ArrowLeft size={16} className="mr-1" /> Back to Cart
                     </a>
@@ -407,8 +407,8 @@ if(isLoggedIn){
                 </div>
 
                 {/* RIGHT COLUMN: ORDER SUMMARY (Sticky on Desktop) */}
-                <div className="hidden md:block w-96">
-                    <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm sticky top-8">
+                <div className="w-full lg:w-96 lg:flex-shrink-0">
+                    <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm lg:sticky lg:top-8">
                         <h3 className="text-lg font-bold text-gray-800 mb-4">Order Summary</h3>
 
                         <div className="space-y-3 text-sm mb-6">

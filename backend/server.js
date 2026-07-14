@@ -320,6 +320,34 @@ app.get("/api/cooks", async (req, res) => {
  }
 });
 
+app.delete("/api/cooks/:id", async (req, res) => {
+ try {
+  const deletedCook = await Cook.findByIdAndDelete(req.params.id);
+
+  if (!deletedCook) {
+   return res.status(404).json({ message: "Vendor not found in database." });
+  }
+
+  await Promise.all([
+   Menu.deleteMany({ kitchenId: req.params.id }),
+   Menu.deleteMany({ kitchenId: deletedCook._id.toString() }),
+   Order.deleteMany({ vendorId: req.params.id }),
+   Order.deleteMany({ vendorId: deletedCook._id.toString() }),
+  ]);
+
+  res.status(200).json({
+   message: "Vendor successfully deleted from database.",
+   deletedCook,
+  });
+ } catch (error) {
+  console.error("Error deleting vendor from database:", error);
+  res.status(500).json({
+   message: "Server error while attempting to delete vendor.",
+   error: error.message,
+  });
+ }
+});
+
 app.post(
  "/api/vendors/signup",
  async (req, res) => {

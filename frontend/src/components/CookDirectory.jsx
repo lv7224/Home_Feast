@@ -100,12 +100,12 @@ export default function CookDirectory() {
   const hasActiveFilters = selectedArea !== "All" || selectedCuisine !== "All" || selectedMealType !== "All" || minRating !== 0 || maxPrice !== "All" || search !== "";
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 py-8 bg-gray-50/50 min-h-screen">
+    <div className="w-full max-w-7xl mx-auto px-0 py-2 bg-gray-50/50 min-h-screen sm:px-1 sm:py-4 lg:px-2 lg:py-6">
 
       {/* HEADER SECTION */}
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Top Homemade Catering & Meal Services</h1>
-        <p className="text-sm text-gray-500 mt-1">Discover verified local home kitchens serving fresh, personalized meals near you.</p>
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">Top Homemade Catering & Meal Services</h1>
+        <p className="mt-1 text-sm leading-6 text-gray-500 sm:text-base">Discover verified local home kitchens serving fresh, personalized meals near you.</p>
       </div>
 
       {/* FILTER STACK CONTAINER */}
@@ -135,7 +135,7 @@ export default function CookDirectory() {
         </div>
 
         {/* 2. Horizontal Interactive Filter Pills */}
-        <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-gray-100">
+        <div className="grid grid-cols-1 gap-2 border-t border-gray-100 pt-2 sm:grid-cols-2 xl:grid-cols-4">
 
           {/* Areas Filter */}
           <div className="relative">
