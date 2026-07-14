@@ -119,13 +119,18 @@ export default function VendorSignup() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-8 px-3 sm:px-4 sm:py-10 lg:px-8 lg:py-12">
-      <div className="max-w-2xl w-full mx-auto bg-white rounded-xl shadow-md p-5 sm:p-8 border border-gray-100">
+    <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,rgba(249,115,22,0.12),transparent_30%),linear-gradient(135deg,#fff7ed_0%,#f8fafc_100%)] flex flex-col justify-center py-8 px-3 sm:px-4 sm:py-10 lg:px-8 lg:py-12">
+      <div className="max-w-2xl w-full mx-auto bg-white rounded-3xl shadow-[0_20px_60px_-20px_rgba(15,23,42,0.28)] p-5 sm:p-8 border border-gray-100">
         
         {/* Form Title Heading */}
         <div className="text-center mb-8">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-orange-500 text-white shadow-lg shadow-orange-500/20">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-7 w-7">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3 10.5V6.75A1.5 1.5 0 014.5 5.25h15A1.5 1.5 0 0121 6.75v3.75M3 10.5h18m-18 0v6.75A1.5 1.5 0 004.5 18.75h15a1.5 1.5 0 001.5-1.5v-6.75M8 14.25h8" />
+            </svg>
+          </div>
           <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight">
-            Register Your Home Kitchen/ Tiffin Service
+            Register Your Home Kitchen / Tiffin Service
           </h2>
           <p className="mt-2 text-sm text-gray-600">
             Join <span className="text-green-600 font-semibold">HomeFeast</span> to serve healthy, home-style meals to local subscribers.

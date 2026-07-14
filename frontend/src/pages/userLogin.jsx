@@ -93,14 +93,14 @@ const UserLogin = () => {
   
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-3 py-8 sm:px-4 lg:px-8">
-      <div className="max-w-md w-full space-y-6 bg-white p-6 sm:p-8 rounded-xl shadow-md border border-gray-100">
-        <div className="text-center">
-          <h2 className="text-3xl font-extrabold text-gray-900">Welcome Back</h2>
-          <p className="mt-2 text-sm text-gray-600">
-            Sign in to order fresh, homemade meals near you
-          </p>
+    <div className="min-h-screen flex items-center justify-center bg-[radial-gradient(circle_at_top_left,rgba(34,197,94,0.16),transparent_35%),linear-gradient(135deg,#f8fafc_0%,#eefbf2_100%)] px-3 py-8 sm:px-4 lg:px-8">
+      <div className="max-w-md w-full overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-[0_20px_60px_-20px_rgba(15,23,42,0.28)]">
+        <div className="bg-linear-to-r from-green-600 to-emerald-500 px-6 py-8 text-white sm:px-8">
+          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-green-50/90">Member access</p>
+          <h2 className="mt-2 text-3xl font-bold">Welcome Back</h2>
+          <p className="mt-2 text-sm text-green-50/90">Sign in to order fresh, homemade meals near you.</p>
         </div>
+        <div className="space-y-6 p-6 sm:p-8">
 
         {alert.message && (
           <div
@@ -200,7 +200,7 @@ const UserLogin = () => {
                 
           <button
             type="submit"
-            className="w-full py-3 px-4 mt-4 rounded-lg shadow-sm text-sm font-medium text-white bg-green-500 hover:bg-green-600 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+            className="w-full py-3 px-4 mt-4 rounded-xl shadow-sm text-sm font-semibold text-white bg-green-600 hover:bg-green-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
           >
             Sign In
           </button>
@@ -215,6 +215,7 @@ const UserLogin = () => {
             Register here
           </a>
         </p>
+        </div>
       </div>
     </div>
   );

@@ -135,7 +135,7 @@ export default function CookDirectory() {
         </div>
 
         {/* 2. Horizontal Interactive Filter Pills */}
-        <div className="grid grid-cols-1 gap-2 border-t border-gray-100 pt-2 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="grid grid-cols-2 gap-1 border-t border-gray-100 pt-2 sm:grid-cols-3 xl:grid-cols-5">
 
           {/* Areas Filter */}
           <div className="relative">

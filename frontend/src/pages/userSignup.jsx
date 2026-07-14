@@ -90,14 +90,14 @@ const UserSignup = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-3 py-8 sm:px-4 lg:px-8">
-      <div className="max-w-md w-full space-y-6 bg-white p-6 sm:p-8 rounded-xl shadow-md border border-gray-100">
-        <div className="text-center">
-          <h2 className="text-3xl font-extrabold text-gray-900">Create Account</h2>
-          <p className="mt-2 text-sm text-gray-600">
-            Join HomeFeast to enjoy healthy, home-cooked meals daily
-          </p>
+    <div className="min-h-screen flex items-center justify-center bg-[radial-gradient(circle_at_top_left,rgba(249,115,22,0.16),transparent_35%),linear-gradient(135deg,#fefce8_0%,#f8fafc_100%)] px-3 py-8 sm:px-4 lg:px-8">
+      <div className="max-w-md w-full overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-[0_20px_60px_-20px_rgba(15,23,42,0.28)]">
+        <div className="bg-linear-to-r from-orange-500 to-amber-400 px-6 py-8 text-white sm:px-8">
+          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-orange-50/90">New account</p>
+          <h2 className="mt-2 text-3xl font-bold">Create Account</h2>
+          <p className="mt-2 text-sm text-orange-50/90">Join HomeFeast to enjoy healthy, home-cooked meals daily.</p>
         </div>
+        <div className="space-y-6 p-6 sm:p-8">
 
         {alert.message && (
           <div
@@ -200,7 +200,7 @@ const UserSignup = () => {
 
           <button
             type="submit"
-            className="w-full py-3 px-4 mt-2 rounded-lg shadow-sm text-sm font-medium text-white bg-green-500 hover:bg-green-600 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+            className="w-full py-3 px-4 mt-2 rounded-xl shadow-sm text-sm font-semibold text-white bg-orange-500 hover:bg-orange-600 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
           >
             Sign Up
           </button>
@@ -212,6 +212,7 @@ const UserSignup = () => {
             Sign In
           </a>
         </p>
+        </div>
       </div>
     </div>
   );

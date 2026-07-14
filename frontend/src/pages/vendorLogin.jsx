@@ -59,12 +59,15 @@ const VendorLogin = () => {
   };
 
 return (
-  <div className="min-h-screen bg-gray-50 flex flex-col justify-between font-sans text-gray-800">
+  <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,rgba(34,197,94,0.12),transparent_35%),linear-gradient(135deg,#f8fafc_0%,#f0fdf4_100%)] flex flex-col justify-between font-sans text-gray-800">
 
     {/* Main Content Card */}
     <main className="grow flex items-center justify-center px-3 py-8 sm:px-4 lg:px-8">
-      <div className="bg-white rounded-2xl shadow-xl border border-gray-100 max-w-md w-full p-6 sm:p-8 md:p-10 transform transition-all duration-300 hover:shadow-2xl">
+      <div className="bg-white rounded-3xl shadow-[0_20px_60px_-20px_rgba(15,23,42,0.28)] border border-gray-100 max-w-md w-full p-6 sm:p-8 md:p-10 transform transition-all duration-300 hover:-translate-y-1">
         <div className="text-center mb-8">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-green-600 text-white shadow-lg shadow-green-600/20">
+            <LogIn size={24} />
+          </div>
           <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight">
             Vendor Portal
           </h2>

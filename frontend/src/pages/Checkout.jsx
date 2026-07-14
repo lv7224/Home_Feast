@@ -407,7 +407,7 @@ if(isLoggedIn){
                 </div>
 
                 {/* RIGHT COLUMN: ORDER SUMMARY (Sticky on Desktop) */}
-                <div className="w-full lg:w-96 lg:flex-shrink-0">
+                <div className="w-full lg:w-96 lg:shrink-0">
                     <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm lg:sticky lg:top-8">
                         <h3 className="text-lg font-bold text-gray-800 mb-4">Order Summary</h3>
 

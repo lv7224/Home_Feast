@@ -274,7 +274,7 @@ export default function KitchenMenuView() {
                             <p className="text-xs text-gray-500 mt-1">{item.description}</p>
                           </div>
                         </div>
-                        <div className="min-w-[96px] sm:min-w-[110px]">
+                        <div className="min-w-24 sm:min-w-27.5">
                           {qty > 0 ? (
                             <div className="flex items-center justify-between w-full bg-orange-500 text-white rounded-lg font-bold">
                               <button onClick={() => handleUpdateCart(item._id, qty - 1)} className="px-3 py-1 cursor-pointer">-</button>
