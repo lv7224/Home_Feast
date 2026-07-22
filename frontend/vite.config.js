@@ -4,6 +4,7 @@ import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
   plugins: [react(),tailwindcss()],
+  base:'/',
   server: {
     proxy: {
       // Forwards any client fetch requests starting with /api directly to port 5000
